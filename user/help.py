@@ -9,13 +9,13 @@ def register_help_handler(client, user_id: int):
         if event.sender_id != user_id:
             return
 
-        bot_username = BOT_USERNAME.replace("@", "").strip()
+        bot_username = (BOT_USERNAME or "").replace("@", "").strip()
 
         text = (
             "✨ **Menu inline RamsBot**\n\n"
-            f"Untuk menampilkan menu seperti `via @{bot_username}` di chat ini, ketik:\n"
+            f"Tekan tombol **Buka Menu Inline** dari bot, atau ketik sekali:\n"
             f"`@{bot_username} help`\n\n"
-            "Lalu pilih hasil yang muncul."
+            "Setelah menu terkirim, semua tombol akan berubah langsung tanpa perlu ketik ulang."
         )
 
         await event.reply(text, parse_mode="md")
