@@ -1,36 +1,43 @@
-from telethon import events, Button
+from telethon import events
+from telethon.tl.functions.messages import (
+    GetInlineBotResultsRequest,
+    SendInlineBotResultRequest,
+)
 
-MENU_ITEMS = [
-    ("BING CHAT", "help_bingchat"),
-    ("KODE POS",  "help_kodepos"),
-    ("streaming", "help_streaming"),
-    ("YTSEARCH",  "help_ytsearch"),
-    ("AL QUR'AN", "help_alquran"),
-    ("ADMIN",     "help_admin"),
-    ("ADZAN",     "help_adzan"),
-    ("AFK",       "help_afk"),
-]
+from config import BOT_USERNAME
 
 
 def register_help_handler(client, user_id: int):
-    @client.on(events.NewMessage(pattern=r"^\.help$", outgoing=True))
+    @client.on(events.NewMessage(pattern=r"^\\.help$", outgoing=True))
     async def help_cmd(event):
-        me = await client.get_me()
         await event.delete()
 
-        buttons = [
-            [Button.inline(MENU_ITEMS[i][0], MENU_ITEMS[i][1]),
-             Button.inline(MENU_ITEMS[i + 1][0], MENU_ITEMS[i + 1][1])]
-            if i + 1 < len(MENU_ITEMS) else
-            [Button.inline(MENU_ITEMS[i][0], MENU_ITEMS[i][1])]
-            for i in range(0, len(MENU_ITEMS), 2)
-        ]
+        try:
+            chat = await event.get_input_chat()
+            bot = await client.get_input_entity(BOT_USERNAME)
 
-        await client.send_message(
-            event.chat_id,
-            f"☆ **MENU INLINE**\n"
-            f"• Plugins: {len(MENU_ITEMS)}\n"
-            f"• Prefix: `.`\n"
-            f"• Owner: @{me.username}",
-            buttons=buttons,
-        )
+            results = await client(GetInlineBotResultsRequest(
+                bot=bot,
+                peer=chat,
+                query="help",
+                offset="",
+            ))
+
+            if not results.results:
+                await client.send_message(event.chat_id, "❌ Inline result tidak ditemukan.")
+                return
+
+            first = results.results[0]
+
+            await client(SendInlineBotResultRequest(
+                peer=chat,
+                query_id=results.query_id,
+                id=first.id,
+                hide_via=False,
+            ))
+
+        except Exception as e:
+            await client.send_message(
+                event.chat_id,
+                f"❌ Gagal menampilkan inline help: {e}"
+            )
