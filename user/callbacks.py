@@ -27,6 +27,7 @@ from utils.channel_scanner import get_admin_channels
 
 async def _show_auto_block_menu(query, uid):
     client = active_clients.get(uid)
+
     if not client or not client.is_connected():
         await query.edit_message_text(
             "❌ Session belum aktif. Lakukan /setup dulu.",
@@ -52,11 +53,13 @@ async def _show_auto_block_menu(query, uid):
         buttons.append([
             InlineKeyboardButton(
                 f"{status} {ch['name']}",
-                callback_data=f"abl_toggle_{ch['id']}"
+                callback_data=f"abl_toggle_{ch['id']}",
             )
         ])
 
-    buttons.append([InlineKeyboardButton("🔙 Kembali ke Fitur VIP", callback_data="menu_fitur")])
+    buttons.append([
+        InlineKeyboardButton("🔙 Kembali ke Fitur VIP", callback_data="menu_fitur")
+    ])
 
     await query.edit_message_text(
         "🔒 *Auto Block Leaver*\n\n"
@@ -132,25 +135,11 @@ async def user_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
         return
 
     if data == "menu_fitur":
-    await query.edit_message_text(
-        "✨ *Fitur VIP*\n\n"
-        "Pilih fitur di bawah.\n"
-        "Untuk menu seperti screenshot dengan label `via @ramsjirbot`, tekan tombol *Buka Menu Inline*.",
-        reply_markup=fitur_vip_keyboard(),
-        parse_mode="Markdown",
-    )
-    return
-
-    if data == "fitur_help_info":
         await query.edit_message_text(
-            "ℹ️ *Menu Inline Telethon*\n\n"
-            "Setelah session kamu aktif lewat /setup, kamu bisa ketik:\n"
-            "`.help`\n"
-            "atau\n"
-            "`.menu`\n\n"
-            "di room chat mana pun.\n\n"
-            "Menu itu akan dikirim dari akun Telegram kamu sendiri, bukan dari bot utama.",
-            reply_markup=back_to_fitur_keyboard(),
+            "✨ *Fitur VIP*\n\n"
+            "Pilih fitur di bawah.\n"
+            "Untuk menu seperti screenshot dengan label `via bot`, tekan tombol *Buka Menu Inline*.",
+            reply_markup=fitur_vip_keyboard(),
             parse_mode="Markdown",
         )
         return
