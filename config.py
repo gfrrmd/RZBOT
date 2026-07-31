@@ -1,10 +1,13 @@
 import json
 import os
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
-BOT_USERNAME = os.environ["BOT_USERNAME"]  # contoh: ramsbot_helper_bot (tanpa @)
-ADMIN_ID = int(os.environ["ADMIN_ID"])
-DATABASE_URL = os.environ["DATABASE_URL"]
+API_ID = int(os.getenv("API_ID", "0"))
+API_HASH = os.getenv("API_HASH", "")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+
+BOT_USERNAME = os.getenv("BOT_USERNAME", "").replace("@", "").strip()
 
 # API credentials milik admin (1 untuk semua user)
 API_ID = int(os.environ["API_ID"])
