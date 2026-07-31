@@ -12,79 +12,56 @@ from telegram.ext import ContextTypes
 from config import BOT_USERNAME
 
 
-def _bot_username():
-    return BOT_USERNAME.replace("@", "").strip()
+def _bot_username() -> str:
+    return (BOT_USERNAME or "").replace("@", "").strip()
 
 
-def feature_keyboard():
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("⏱️ TIMER", switch_inline_query_current_chat="help timer"),
-            InlineKeyboardButton("📣 COPY", switch_inline_query_current_chat="help copy"),
-        ],
-        [
-            InlineKeyboardButton("🎥 STORY", switch_inline_query_current_chat="help story"),
-            InlineKeyboardButton("📢 BROADCAST", switch_inline_query_current_chat="help bc"),
-        ],
-        [
-            InlineKeyboardButton("🏓 PING", switch_inline_query_current_chat="help ping"),
-            InlineKeyboardButton("✅ ACCEPTALL", switch_inline_query_current_chat="help acceptall"),
-        ],
-        [
-            InlineKeyboardButton("🔒 AUTOBLOCK", switch_inline_query_current_chat="help autoblock"),
-        ],
-        [
-            InlineKeyboardButton("🏠 HOME", switch_inline_query_current_chat="help"),
-        ],
-    ])
-
-
-def build_inline_payload(query: str):
-    q = (query or "").strip().lower()
+def build_menu_text(key: str) -> str:
     bot_username = _bot_username()
 
-    if q in ("", "help", "menu"):
-        text = (
+    pages = {
+        "home": (
             "☆ *MENU INLINE RAMSBOT*\n"
             "• Plugins: 7\n"
             "• Prefix: `.`\n"
             f"• Owner: @{bot_username}\n\n"
             "Pilih fitur di bawah."
-        )
-        title = "Menu Inline RamsBot"
-        desc = "Kirim menu inline RamsBot ke chat ini"
-        return text, title, desc, feature_keyboard()
-
-    mapping = {
-        "help timer": (
+        ),
+        "timer": (
             "⏱️ *Download Media Timer & View Once*\n\n"
+            "Simpan foto/video timer yang hanya bisa dilihat sekali.\n\n"
+            "📝 *Cara pakai:*\n"
             "Balas pesan view once/timer dengan:\n"
             "`.dl`\n\n"
             "⚙️ Auto DL diatur dari bot utama."
         ),
-        "help copy": (
+        "copy": (
             "📣 *Download dari Channel/Grup Private*\n\n"
             "Gunakan:\n"
-            "`.copy (link postingan)`"
+            "`.copy (link postingan)`\n\n"
+            "💡 Contoh:\n"
+            "`.copy https://t.me/koleksijee/456`"
         ),
-        "help story": (
+        "story": (
             "🎥 *Download Story*\n\n"
             "Gunakan:\n"
-            "`.story (link story)`"
+            "`.story (link story)`\n\n"
+            "💡 Contoh:\n"
+            "`.story https://t.me/username/s/7`"
         ),
-        "help bc": (
+        "bc": (
             "📢 *Broadcast*\n\n"
             "Gunakan:\n"
             "`.bc (pesan kamu)`\n\n"
             "🚫 Batalkan:\n"
             "`.cancel #task_id`"
         ),
-        "help ping": (
+        "ping": (
             "🏓 *Ping*\n\n"
             "Gunakan:\n"
             "`.ping`"
         ),
-        "help acceptall": (
+        "acceptall": (
             "✅ *Auto Approve*\n\n"
             "Gunakan:\n"
             "`.acceptall`\n"
@@ -92,31 +69,37 @@ def build_inline_payload(query: str):
             "⏹ Stop:\n"
             "`.stopaccept`"
         ),
-        "help autoblock": (
+        "autoblock": (
             "🔒 *Auto Block Leaver*\n\n"
-            "Pengaturan channel dilakukan di bot utama pada menu Fitur VIP."
+            "Pengaturan channel dilakukan di bot utama pada menu Fitur VIP.\n"
+            "Jika seseorang keluar dari channel yang aktif, akun mereka akan otomatis diblokir dari akun Telegram kamu."
         ),
     }
 
-    text = mapping.get(q)
-    if text:
-        title = f"RamsBot Help - {q.replace('help ', '').upper()}"
-        desc = f"Panduan fitur {q.replace('help ', '')}"
-        return text, title, desc, feature_keyboard()
+    return pages.get(key, pages["home"])
 
-    text = (
-        "❌ *Menu tidak ditemukan*\n\n"
-        "Gunakan salah satu query berikut:\n"
-        "`help`\n"
-        "`help timer`\n"
-        "`help copy`\n"
-        "`help story`\n"
-        "`help bc`\n"
-        "`help ping`\n"
-        "`help acceptall`\n"
-        "`help autoblock`"
-    )
-    return text, "RamsBot Help", "Panduan fitur RamsBot", feature_keyboard()
+
+def build_menu_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("⏱️ TIMER", callback_data="ih_timer"),
+            InlineKeyboardButton("📣 COPY", callback_data="ih_copy"),
+        ],
+        [
+            InlineKeyboardButton("🎥 STORY", callback_data="ih_story"),
+            InlineKeyboardButton("📢 BROADCAST", callback_data="ih_bc"),
+        ],
+        [
+            InlineKeyboardButton("🏓 PING", callback_data="ih_ping"),
+            InlineKeyboardButton("✅ ACCEPTALL", callback_data="ih_acceptall"),
+        ],
+        [
+            InlineKeyboardButton("🔒 AUTOBLOCK", callback_data="ih_autoblock"),
+        ],
+        [
+            InlineKeyboardButton("🏠 HOME", callback_data="ih_home"),
+        ],
+    ])
 
 
 async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -124,18 +107,16 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     if not inline_query:
         return
 
-    text, title, description, markup = build_inline_payload(inline_query.query)
-
     results = [
         InlineQueryResultArticle(
             id=str(uuid.uuid4()),
-            title=title,
-            description=description,
+            title="Menu Inline RamsBot",
+            description="Kirim menu inline RamsBot ke chat ini",
             input_message_content=InputTextMessageContent(
-                text,
+                build_menu_text("home"),
                 parse_mode="Markdown",
             ),
-            reply_markup=markup,
+            reply_markup=build_menu_keyboard(),
         )
     ]
 
@@ -143,4 +124,25 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         results=results,
         cache_time=0,
         is_personal=True,
+    )
+
+
+async def inline_menu_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    if not query:
+        return
+
+    await query.answer()
+
+    data = query.data or ""
+    if not data.startswith("ih_"):
+        return
+
+    key = data.replace("ih_", "", 1)
+    text = build_menu_text(key)
+
+    await query.edit_message_text(
+        text=text,
+        reply_markup=build_menu_keyboard(),
+        parse_mode="Markdown",
     )
