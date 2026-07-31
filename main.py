@@ -57,11 +57,10 @@ def build_help_markup():
     rows = []
     for i in range(0, len(HELP_MENU), 2):
         pair = HELP_MENU[i:i + 2]
-        row = [
-            InlineKeyboardButton(text=label, callback_data=f"help_{key}")
+        rows.append([
+            InlineKeyboardButton(label, callback_data=f"help_{key}")
             for label, key in pair
-        ]
-        rows.append(row)
+        ])
 
     rows.append([
         InlineKeyboardButton("〃", callback_data="help_prev"),
@@ -74,8 +73,8 @@ def build_help_markup():
 async def inline_query_help(update, context):
     query = (update.inline_query.query or "").strip().lower()
 
-    # Izinkan query kosong, "help", ".help", atau "menu"
     if query not in ("", "help", ".help", "menu"):
+        await update.inline_query.answer([], cache_time=1, is_personal=True)
         return
 
     owner = f"@{BOT_USERNAME}"
@@ -110,21 +109,21 @@ async def help_inline_callback(update, context):
     query = update.callback_query
     data = query.data
 
-    texts = {
-        "help_bingchat": "Fitur **BING CHAT** belum dihubungkan ke handler menu.",
-        "help_kodepos": "Fitur **KODE POS** belum dihubungkan ke handler menu.",
-        "help_streaming": "Fitur **streaming** belum dihubungkan ke handler menu.",
-        "help_ytsearch": "Fitur **YTSEARCH** belum dihubungkan ke handler menu.",
-        "help_alquran": "Fitur **AL QUR'AN** belum dihubungkan ke handler menu.",
-        "help_admin": "Fitur **ADMIN** belum dihubungkan ke handler menu.",
-        "help_adzan": "Fitur **ADZAN** belum dihubungkan ke handler menu.",
-        "help_afk": "Fitur **AFK** belum dihubungkan ke handler menu.",
+    callback_text = {
+        "help_bingchat": "Menu BING CHAT dipilih.",
+        "help_kodepos": "Menu KODE POS dipilih.",
+        "help_streaming": "Menu streaming dipilih.",
+        "help_ytsearch": "Menu YTSEARCH dipilih.",
+        "help_alquran": "Menu AL QUR'AN dipilih.",
+        "help_admin": "Menu ADMIN dipilih.",
+        "help_adzan": "Menu ADZAN dipilih.",
+        "help_afk": "Menu AFK dipilih.",
         "help_prev": "Halaman sebelumnya belum tersedia.",
-        "help_home": "Kamu sedang di halaman utama menu.",
+        "help_home": "Kamu sedang di halaman utama.",
         "help_next": "Halaman berikutnya belum tersedia.",
     }
 
-    await query.answer(texts.get(data, "Menu tidak dikenali."), show_alert=False)
+    await query.answer(callback_text.get(data, "Menu tidak dikenali."), show_alert=False)
 
 
 async def post_init(app):
@@ -155,7 +154,6 @@ async def post_init(app):
         if not is_subscribed(user_id):
             print(f"⏭️ Skip session user {user_id} (VIP tidak aktif)")
             continue
-
         try:
             client = build_client(API_ID, API_HASH, string_session)
             dl_locks.setdefault(user_id, asyncio.Lock())
