@@ -137,16 +137,27 @@ async def inline_menu_callback_handler(update: Update, context: ContextTypes.DEF
     await query.answer()
 
     if data == "ih_close":
+        if query.message:
+            try:
+                await query.delete_message()
+                return
+            except Exception:
+                pass
+
         try:
-            await query.delete_message()
-            return
-        except Exception:
             await query.edit_message_text(
-                text="✅ Menu ditutup.",
+                text="ㅤ",
                 reply_markup=None,
-                parse_mode="Markdown",
             )
             return
+        except Exception:
+            pass
+
+        try:
+            await query.edit_message_reply_markup(reply_markup=None)
+        except Exception:
+            pass
+        return
 
     key = data.replace("ih_", "", 1)
 
