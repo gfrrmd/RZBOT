@@ -14,8 +14,8 @@ from telegram.ext import (
     ChatMemberHandler,
     CommandHandler,
     ConversationHandler,
-    MessageHandler,
     InlineQueryHandler,
+    MessageHandler,
     filters,
 )
 
@@ -74,6 +74,7 @@ def build_help_markup():
 async def inline_query_help(update, context):
     query = (update.inline_query.query or "").strip().lower()
 
+    # Izinkan query kosong, "help", ".help", atau "menu"
     if query not in ("", "help", ".help", "menu"):
         return
 
@@ -98,7 +99,11 @@ async def inline_query_help(update, context):
         )
     ]
 
-    await update.inline_query.answer(results, cache_time=1, is_personal=True)
+    await update.inline_query.answer(
+        results=results,
+        cache_time=1,
+        is_personal=True,
+    )
 
 
 async def help_inline_callback(update, context):
@@ -150,6 +155,7 @@ async def post_init(app):
         if not is_subscribed(user_id):
             print(f"⏭️ Skip session user {user_id} (VIP tidak aktif)")
             continue
+
         try:
             client = build_client(API_ID, API_HASH, string_session)
             dl_locks.setdefault(user_id, asyncio.Lock())
@@ -206,6 +212,7 @@ def main():
         "message",
         "callback_query",
         "inline_query",
+        "chosen_inline_result",
         "chat_member",
     ])
 
