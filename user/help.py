@@ -41,4 +41,4 @@ def register_help_handler(client, user_id: int):
                 pass
 
         except Exception as e:
-            await event.reply(f"❌ Gagal membuka menu inline: {e}")
+            await event.reply(f"❌ Gagal membuka menu: {e}")
