@@ -9,6 +9,12 @@ from telegram import (
 )
 from telegram.ext import ContextTypes
 
+from config import BOT_USERNAME
+
+
+def _bot_username():
+    return BOT_USERNAME.replace("@", "").strip()
+
 
 def feature_keyboard():
     return InlineKeyboardMarkup([
@@ -35,13 +41,14 @@ def feature_keyboard():
 
 def build_inline_payload(query: str):
     q = (query or "").strip().lower()
+    bot_username = _bot_username()
 
     if q in ("", "help", "menu"):
         text = (
             "☆ *MENU INLINE RAMSBOT*\n"
             "• Plugins: 7\n"
             "• Prefix: `.`\n"
-            "• Owner: @ramsjirbot\n\n"
+            f"• Owner: @{bot_username}\n\n"
             "Pilih fitur di bawah."
         )
         title = "Menu Inline RamsBot"
@@ -51,8 +58,6 @@ def build_inline_payload(query: str):
     mapping = {
         "help timer": (
             "⏱️ *Download Media Timer & View Once*\n\n"
-            "Simpan foto/video timer yang hanya bisa dilihat sekali.\n\n"
-            "📝 *Cara pakai:*\n"
             "Balas pesan view once/timer dengan:\n"
             "`.dl`\n\n"
             "⚙️ Auto DL diatur dari bot utama."
@@ -60,16 +65,12 @@ def build_inline_payload(query: str):
         "help copy": (
             "📣 *Download dari Channel/Grup Private*\n\n"
             "Gunakan:\n"
-            "`.copy (link postingan)`\n\n"
-            "💡 Contoh:\n"
-            "`.copy https://t.me/koleksijee/456`"
+            "`.copy (link postingan)`"
         ),
         "help story": (
             "🎥 *Download Story*\n\n"
             "Gunakan:\n"
-            "`.story (link story)`\n\n"
-            "💡 Contoh:\n"
-            "`.story https://t.me/username/s/7`"
+            "`.story (link story)`"
         ),
         "help bc": (
             "📢 *Broadcast*\n\n"
@@ -93,8 +94,7 @@ def build_inline_payload(query: str):
         ),
         "help autoblock": (
             "🔒 *Auto Block Leaver*\n\n"
-            "Pengaturan channel dilakukan di bot utama pada menu Fitur VIP.\n"
-            "Jika seseorang keluar dari channel yang aktif, akun mereka akan otomatis diblokir dari akun Telegram kamu."
+            "Pengaturan channel dilakukan di bot utama pada menu Fitur VIP."
         ),
     }
 
