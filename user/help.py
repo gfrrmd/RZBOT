@@ -8,23 +8,30 @@ from config import BOT_USERNAME
 
 
 def register_help_handler(client, user_id: int):
-    @client.on(events.NewMessage(pattern=r"^\\.help$", outgoing=True))
+    @client.on(events.NewMessage(outgoing=True, pattern=r"^\\.help$"))
     async def help_cmd(event):
-        await event.delete()
+        try:
+            await event.delete()
+        except Exception:
+            pass
 
         try:
             chat = await event.get_input_chat()
-            bot = await client.get_input_entity(BOT_USERNAME)
+            bot_username = BOT_USERNAME.lstrip("@")
+            bot = await client.get_input_entity(bot_username)
 
             results = await client(GetInlineBotResultsRequest(
                 bot=bot,
                 peer=chat,
                 query="help",
-                offset="",
+                offset=""
             ))
 
-            if not results.results:
-                await client.send_message(event.chat_id, "❌ Inline result tidak ditemukan.")
+            if not results or not results.results:
+                await client.send_message(
+                    event.chat_id,
+                    "❌ Inline help tidak ditemukan. Pastikan inline mode bot aktif di BotFather."
+                )
                 return
 
             first = results.results[0]
@@ -39,5 +46,5 @@ def register_help_handler(client, user_id: int):
         except Exception as e:
             await client.send_message(
                 event.chat_id,
-                f"❌ Gagal menampilkan inline help: {e}"
+                f"❌ Gagal menampilkan .help\n\nError: {e}"
             )
