@@ -2,6 +2,7 @@ import json
 import os
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
+BOT_USERNAME = os.environ["BOT_USERNAME"]  # contoh: ramsbot_helper_bot (tanpa @)
 ADMIN_ID = int(os.environ["ADMIN_ID"])
 DATABASE_URL = os.environ["DATABASE_URL"]
 
