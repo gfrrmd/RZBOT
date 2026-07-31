@@ -27,7 +27,7 @@ def register_help_handler(client, user_id: int):
             if not results:
                 await client.send_message(
                     event.chat_id,
-                    "❌ Inline result kosong. Cek apakah inline mode bot sudah aktif dan bot menjawab query `help`."
+                    "❌ Inline result kosong. Cek inline mode bot dan handler inline_query."
                 )
                 return
 
