@@ -56,6 +56,7 @@ async def setup_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     uid = update.callback_query.from_user.id
     await update.callback_query.answer()
     temp_store.pop(uid, None)
+
     if not is_subscribed(uid):
         await update.callback_query.edit_message_text(
             "☹️ *Kamu belum berlangganan VIP.*\n"
@@ -64,12 +65,14 @@ async def setup_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYP
             reply_markup=not_subscribed_keyboard(uid),
         )
         return ConversationHandler.END
+
     return await _ask_phone_number(update, context)
 
 
 async def setup_try_trial_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.callback_query.from_user.id
     await update.callback_query.answer()
+
     success, expired, minutes = activate_trial(uid)
     if not success:
         await update.callback_query.edit_message_text(
@@ -118,6 +121,7 @@ async def cmd_setup(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=main_keyboard(uid)
         )
         return ConversationHandler.END
+
     temp_store.pop(uid, None)
     return await _ask_phone_number(update, context)
 
@@ -126,10 +130,16 @@ async def setup_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     phone = update.message.text.strip()
     client = build_client(API_ID, API_HASH)
+
     try:
         await client.connect()
         result = await client.send_code_request(phone)
-        temp_store[uid] = {"phone": phone, "phone_hash": result.phone_code_hash, "client": client}
+        temp_store[uid] = {
+            "phone": phone,
+            "phone_hash": result.phone_code_hash,
+            "client": client
+        }
+
         await update.message.reply_text(
             "📨 Kode OTP berhasil dikirim ke Telegram kamu!\n\n"
             "*Langkah 2/3 — Kode OTP 🔢*\n\n"
@@ -140,6 +150,7 @@ async def setup_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
         return CODE_STEP
+
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
@@ -155,8 +166,10 @@ async def setup_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
     code = update.message.text.strip().replace(" ", "")
     data = temp_store.get(uid, {})
     client = data.get("client")
+
     try:
         await client.sign_in(data["phone"], code, phone_code_hash=data["phone_hash"])
+
     except SessionPasswordNeededError:
         await update.message.reply_text(
             "🔐 Akun kamu mengaktifkan verifikasi 2 langkah (2FA)\n\n"
@@ -165,16 +178,23 @@ async def setup_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
         return PASSWORD_STEP
+
     except (PhoneCodeInvalidError, PhoneCodeExpiredError):
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text("❌ Kode OTP salah atau sudah kadaluarsa. Silakan /setup ulang.")
+        await update.message.reply_text(
+            "❌ Kode OTP salah atau sudah kadaluarsa. Silakan /setup ulang."
+        )
         return ConversationHandler.END
+
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text(f"❌ Terjadi error: {e}\n\nSilakan /setup ulang.")
+        await update.message.reply_text(
+            f"❌ Terjadi error: {e}\n\nSilakan /setup ulang."
+        )
         return ConversationHandler.END
+
     return await _finish_setup(update, uid, data, client)
 
 
@@ -182,13 +202,18 @@ async def setup_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     data = temp_store.get(uid, {})
     client = data.get("client")
+
     try:
         await client.sign_in(password=update.message.text.strip())
+
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text(f"❌ Password 2FA salah: {e}\n\nSilakan /setup ulang.")
+        await update.message.reply_text(
+            f"❌ Password 2FA salah: {e}\n\nSilakan /setup ulang."
+        )
         return ConversationHandler.END
+
     return await _finish_setup(update, uid, data, client)
 
 
@@ -199,9 +224,11 @@ async def _finish_setup(update, uid, data, client):
     old = active_clients.get(uid)
     if old and old.is_connected():
         await old.disconnect()
+
     dl_locks.setdefault(uid, asyncio.Lock())
     await client.start()
     _start_time[uid] = time.monotonic()
+
     register_telethon_handlers(client, uid)
     active_clients[uid] = client
     asyncio.ensure_future(client.run_until_disconnected())
@@ -210,7 +237,9 @@ async def _finish_setup(update, uid, data, client):
     await update.message.reply_text(
         "✅ *Setup berhasil! Session kamu sudah aktif.*\n\n"
         "⚠️ *PENTING: Jangan logout dari sesi ini!*\n\n"
-        "Bot bekerja menggunakan sesi login akun Telegram kamu yang sudah tersimpan. Jika kamu logout dari perangkat tempat sesi ini dibuat, maka fitur .dl dan .copy akan berhenti berfungsi dan kamu perlu /setup ulang.\n\n"
+        "Bot bekerja menggunakan sesi login akun Telegram kamu yang sudah tersimpan. "
+        "Jika kamu logout dari perangkat tempat sesi ini dibuat, maka fitur .dl dan .copy "
+        "akan berhenti berfungsi dan kamu perlu /setup ulang.\n\n"
         "💡 Gunakan tombol 🎯 *Fitur VIP* di menu utama untuk panduan lengkap setiap fitur.",
         parse_mode="Markdown",
         reply_markup=main_keyboard(uid),
