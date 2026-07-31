@@ -1,25 +1,29 @@
 import asyncio
 import time
-from datetime import timezone, timedelta
+from datetime import timedelta, timezone
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
-from telethon.errors import PhoneCodeExpiredError, PhoneCodeInvalidError, SessionPasswordNeededError
+from telethon.errors import (
+    PhoneCodeExpiredError,
+    PhoneCodeInvalidError,
+    SessionPasswordNeededError,
+)
 
 from auth.states import CODE_STEP, PASSWORD_STEP, PHONE_STEP, temp_store
-from client_manager import active_clients, build_client, dl_locks, _start_time
-from config import API_ID, API_HASH
+from client_manager import _start_time, active_clients, build_client, dl_locks
+from config import API_HASH, API_ID
 from database import activate_trial, is_subscribed, save_user_session
 from keyboards import main_keyboard, not_subscribed_keyboard, trial_activated_keyboard
-from user.download import register_download_handler
-from user.copy import register_copy_handler
-from user.story import register_story_handler
-from user.auto_dl import register_auto_dl_handler
-from user.ping import register_ping_handler
-from user.broadcast import register_broadcast_handler
-from user.join_request import register_join_request_handler
 from user.auto_block_leaver import register_auto_block_leaver_handler
+from user.auto_dl import register_auto_dl_handler
+from user.broadcast import register_broadcast_handler
+from user.copy import register_copy_handler
+from user.download import register_download_handler
 from user.help import register_help_handler
+from user.join_request import register_join_request_handler
+from user.ping import register_ping_handler
+from user.story import register_story_handler
 
 WIB = timezone(timedelta(hours=7))
 
@@ -45,10 +49,12 @@ async def _ask_phone_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Contoh: `+6281234567890`\n\n"
         "Kirim nomor HP kamu, atau /cancel untuk batal:"
     )
+
     if update.callback_query:
         await update.callback_query.edit_message_text(text, parse_mode="Markdown")
     else:
         await update.message.reply_text(text, parse_mode="Markdown")
+
     return PHONE_STEP
 
 
@@ -95,6 +101,7 @@ async def setup_try_trial_callback(update: Update, context: ContextTypes.DEFAULT
         durasi_str = f"{minutes} menit"
 
     exp_str = expired_wib.strftime("%H:%M WIB, %d %b %Y")
+
     await update.callback_query.edit_message_text(
         f"🎉 *Free Trial Aktif!*\n\n"
         f"⏳ Durasi: *{durasi_str}*\n"
@@ -115,10 +122,11 @@ async def setup_continue_after_trial_callback(update: Update, context: ContextTy
 
 async def cmd_setup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
+
     if not is_subscribed(uid):
         await update.message.reply_text(
             "❌ Kamu belum berlangganan VIP.\nHubungi admin untuk berlangganan.",
-            reply_markup=main_keyboard(uid)
+            reply_markup=main_keyboard(uid),
         )
         return ConversationHandler.END
 
@@ -134,10 +142,11 @@ async def setup_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await client.connect()
         result = await client.send_code_request(phone)
+
         temp_store[uid] = {
             "phone": phone,
             "phone_hash": result.phone_code_hash,
-            "client": client
+            "client": client,
         }
 
         await update.message.reply_text(
@@ -154,9 +163,10 @@ async def setup_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
+
         await update.message.reply_text(
             f"❌ Gagal mengirim OTP: {e}\n\nSilakan /setup ulang dari awal.",
-            reply_markup=main_keyboard(uid)
+            reply_markup=main_keyboard(uid),
         )
         return ConversationHandler.END
 
@@ -169,7 +179,6 @@ async def setup_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         await client.sign_in(data["phone"], code, phone_code_hash=data["phone_hash"])
-
     except SessionPasswordNeededError:
         await update.message.reply_text(
             "🔐 Akun kamu mengaktifkan verifikasi 2 langkah (2FA)\n\n"
@@ -178,21 +187,15 @@ async def setup_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
         return PASSWORD_STEP
-
     except (PhoneCodeInvalidError, PhoneCodeExpiredError):
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text(
-            "❌ Kode OTP salah atau sudah kadaluarsa. Silakan /setup ulang."
-        )
+        await update.message.reply_text("❌ Kode OTP salah atau sudah kadaluarsa. Silakan /setup ulang.")
         return ConversationHandler.END
-
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text(
-            f"❌ Terjadi error: {e}\n\nSilakan /setup ulang."
-        )
+        await update.message.reply_text(f"❌ Terjadi error: {e}\n\nSilakan /setup ulang.")
         return ConversationHandler.END
 
     return await _finish_setup(update, uid, data, client)
@@ -205,13 +208,10 @@ async def setup_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         await client.sign_in(password=update.message.text.strip())
-
     except Exception as e:
         await client.disconnect()
         temp_store.pop(uid, None)
-        await update.message.reply_text(
-            f"❌ Password 2FA salah: {e}\n\nSilakan /setup ulang."
-        )
+        await update.message.reply_text(f"❌ Password 2FA salah: {e}\n\nSilakan /setup ulang.")
         return ConversationHandler.END
 
     return await _finish_setup(update, uid, data, client)
@@ -226,22 +226,22 @@ async def _finish_setup(update, uid, data, client):
         await old.disconnect()
 
     dl_locks.setdefault(uid, asyncio.Lock())
+
     await client.start()
     _start_time[uid] = time.monotonic()
-
     register_telethon_handlers(client, uid)
     active_clients[uid] = client
     asyncio.ensure_future(client.run_until_disconnected())
 
     temp_store.pop(uid, None)
+
     await update.message.reply_text(
         "✅ *Setup berhasil! Session kamu sudah aktif.*\n\n"
         "⚠️ *PENTING: Jangan logout dari sesi ini!*\n\n"
-        "Bot bekerja menggunakan sesi login akun Telegram kamu yang sudah tersimpan. "
-        "Jika kamu logout dari perangkat tempat sesi ini dibuat, maka fitur .dl dan .copy "
-        "akan berhenti berfungsi dan kamu perlu /setup ulang.\n\n"
+        "Bot bekerja menggunakan sesi login akun Telegram kamu yang sudah tersimpan. Jika kamu logout dari perangkat tempat sesi ini dibuat, maka fitur .dl dan .copy akan berhenti berfungsi dan kamu perlu /setup ulang.\n\n"
         "💡 Gunakan tombol 🎯 *Fitur VIP* di menu utama untuk panduan lengkap setiap fitur.",
         parse_mode="Markdown",
         reply_markup=main_keyboard(uid),
     )
+
     return ConversationHandler.END
