@@ -1,6 +1,6 @@
 from telethon import events
 
-BOT_USERNAME = "ramsjirbot"
+from config import BOT_USERNAME
 
 
 def register_help_handler(client, user_id: int):
@@ -9,10 +9,12 @@ def register_help_handler(client, user_id: int):
         if event.sender_id != user_id:
             return
 
+        bot_username = BOT_USERNAME.replace("@", "").strip()
+
         text = (
             "✨ **Menu inline RamsBot**\n\n"
-            f"Untuk menampilkan menu seperti `via @{BOT_USERNAME}` di chat ini, ketik:\n"
-            f"`@{BOT_USERNAME} help`\n\n"
+            f"Untuk menampilkan menu seperti `via @{bot_username}` di chat ini, ketik:\n"
+            f"`@{bot_username} help`\n\n"
             "Lalu pilih hasil yang muncul."
         )
 
