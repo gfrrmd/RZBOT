@@ -7,6 +7,7 @@ from telegram.ext import (
     ChatMemberHandler,
     CommandHandler,
     ConversationHandler,
+    InlineQueryHandler,
     MessageHandler,
     filters,
 )
@@ -28,6 +29,7 @@ from auth.states import CODE_STEP, PASSWORD_STEP, PHONE_STEP
 from client_manager import _start_time, active_clients, build_client, dl_locks
 from config import API_HASH, API_ID, BOT_TOKEN
 from database import get_conn, init_db, is_subscribed
+from inline_menu import inline_query_handler
 from user.auto_block_leaver import handle_chat_member_left
 from user.callbacks import user_callback_handler
 from user.start import cmd_cancel, cmd_start
@@ -108,6 +110,7 @@ def main():
     app.add_handler(CommandHandler("gift", cmd_gift))
     app.add_handler(CommandHandler("revoke", cmd_revoke))
     app.add_handler(setup_conv)
+    app.add_handler(InlineQueryHandler(inline_query_handler))
     app.add_handler(CallbackQueryHandler(admin_callback_handler, pattern=r"^(menu_admin|admin_|bl_)"))
     app.add_handler(CallbackQueryHandler(user_callback_handler))
     app.add_handler(MessageHandler(filters.ALL, admin_message_handler), group=2)
@@ -118,6 +121,7 @@ def main():
         allowed_updates=[
             "message",
             "callback_query",
+            "inline_query",
             "chat_member",
         ]
     )
