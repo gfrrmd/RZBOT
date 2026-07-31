@@ -21,10 +21,7 @@ def build_menu_text(key: str) -> str:
 
     pages = {
         "home": (
-            "☆ *MENU INLINE RAMSBOT*\n"
-            "• Plugins: 7\n"
-            "• Prefix: `.`\n"
-            f"• Owner: @{bot_username}\n\n"
+            f"*Fitur & Panduan @{bot_username}*\n"
             "Pilih fitur di bawah."
         ),
         "timer": (
@@ -98,6 +95,7 @@ def build_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton("🏠 HOME", callback_data="ih_home"),
+            InlineKeyboardButton("❌ CLOSE", callback_data="ih_close"),
         ],
     ])
 
@@ -110,8 +108,8 @@ async def inline_query_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     results = [
         InlineQueryResultArticle(
             id=str(uuid.uuid4()),
-            title="Menu Inline RamsBot",
-            description="Kirim menu inline RamsBot ke chat ini",
+            title="Fitur & Panduan Bot",
+            description="Buka fitur dan panduan bot di chat ini",
             input_message_content=InputTextMessageContent(
                 build_menu_text("home"),
                 parse_mode="Markdown",
@@ -132,17 +130,28 @@ async def inline_menu_callback_handler(update: Update, context: ContextTypes.DEF
     if not query:
         return
 
-    await query.answer()
-
     data = query.data or ""
     if not data.startswith("ih_"):
         return
 
+    await query.answer()
+
+    if data == "ih_close":
+        try:
+            await query.delete_message()
+            return
+        except Exception:
+            await query.edit_message_text(
+                text="✅ Menu ditutup.",
+                reply_markup=None,
+                parse_mode="Markdown",
+            )
+            return
+
     key = data.replace("ih_", "", 1)
-    text = build_menu_text(key)
 
     await query.edit_message_text(
-        text=text,
+        text=build_menu_text(key),
         reply_markup=build_menu_keyboard(),
         parse_mode="Markdown",
     )
