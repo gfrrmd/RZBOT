@@ -91,7 +91,7 @@ def fitur_vip_keyboard():
             InlineKeyboardButton("✅ Auto Approve", callback_data="fitur_acceptall"),
         ],
         [InlineKeyboardButton("🔒 Auto Block Leaver", callback_data="fitur_autoblock")],
-        [InlineKeyboardButton("ℹ️ Ketik .help di room chat mana pun", callback_data="fitur_help_info")],
+        [InlineKeyboardButton("✨ Buka Menu Inline", switch_inline_query_current_chat="help")],
         [InlineKeyboardButton("🔙 Kembali", callback_data="menu_back")],
     ])
 
@@ -123,7 +123,7 @@ def timer_keyboard(uid):
     return InlineKeyboardMarkup([
         [InlineKeyboardButton(
             f"⏱️ Auto DL: {'ON ✅' if auto_on else 'OFF ❌'}",
-            callback_data="vip_toggle_auto_dl"
+            callback_data="vip_toggle_auto_dl",
         )],
         [InlineKeyboardButton("🔙 Kembali ke Fitur VIP", callback_data="menu_fitur")],
     ])
