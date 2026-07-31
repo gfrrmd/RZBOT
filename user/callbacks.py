@@ -132,14 +132,14 @@ async def user_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
         return
 
     if data == "menu_fitur":
-        await query.edit_message_text(
-            "✨ *Fitur VIP*\n\n"
-            "Pilih fitur di bawah.\n"
-            "Untuk menu inline yang bisa dipakai di room chat mana pun, ketik `.help` dari akun yang sudah /setup.",
-            reply_markup=fitur_vip_keyboard(),
-            parse_mode="Markdown",
-        )
-        return
+    await query.edit_message_text(
+        "✨ *Fitur VIP*\n\n"
+        "Pilih fitur di bawah.\n"
+        "Untuk menu seperti screenshot dengan label `via @ramsjirbot`, tekan tombol *Buka Menu Inline*.",
+        reply_markup=fitur_vip_keyboard(),
+        parse_mode="Markdown",
+    )
+    return
 
     if data == "fitur_help_info":
         await query.edit_message_text(
