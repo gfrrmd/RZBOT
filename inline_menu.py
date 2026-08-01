@@ -87,6 +87,17 @@ def build_menu_text(key: str) -> str:
             "\U0001f512 *Auto Block Leaver*\n\n"
             "\u26a0\ufe0f Pengaturan channel dilakukan di bot utama pada menu Fitur VIP. Jika seseorang keluar dari channel yang aktif, akun mereka akan otomatis diblokir dari akun Telegram kamu."
         ),
+        "cekid": (
+            "🔍 *Cek ID Telegram*\n\n"
+            "Cek informasi akun Telegram berdasarkan reply, ID angka, atau username.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Balas pesan target lalu kirim:\n"
+            "`.cekid`\n\n"
+            "Atau gunakan salah satu format berikut:\n"
+            "`.cekid 1400806713`\n"
+            "`.cekid @username`\n"
+            "`.cekid username`"
+),
     }
 
     return pages.get(key, pages["home"])
@@ -95,22 +106,23 @@ def build_menu_text(key: str) -> str:
 def build_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("\u23f1\ufe0f TIMER", callback_data="ih_timer"),
-            InlineKeyboardButton("\U0001f4e3 COPY", callback_data="ih_copy"),
+            InlineKeyboardButton("MEDIA TIMER", callback_data="ih_timer"),
+            InlineKeyboardButton("COPY", callback_data="ih_copy"),
         ],
         [
-            InlineKeyboardButton("\U0001f3a5 STORY", callback_data="ih_story"),
-            InlineKeyboardButton("\U0001f4e2 BROADCAST", callback_data="ih_bc"),
+            InlineKeyboardButton("STORY", callback_data="ih_story"),
+            InlineKeyboardButton("BROADCAST", callback_data="ih_bc"),
         ],
         [
-            InlineKeyboardButton("\U0001f3d3 PING", callback_data="ih_ping"),
-            InlineKeyboardButton("\u2705 ACCEPTALL", callback_data="ih_acceptall"),
+            InlineKeyboardButton("PING", callback_data="ih_ping"),
+            InlineKeyboardButton("ACCEPTALL", callback_data="ih_acceptall"),
         ],
         [
-            InlineKeyboardButton("\U0001f512 AUTOBLOCK", callback_data="ih_autoblock"),
+            InlineKeyboardButton("AUTOBLOCK", callback_data="ih_autoblock"),
+            InlineKeyboardButton("CEKID", callback_data="ih_cekid"),
         ],
         [
-            InlineKeyboardButton("\U0001f3e0 HOME", callback_data="ih_home"),
+            InlineKeyboardButton("HOME", callback_data="ih_home"),
         ],
     ])
 
