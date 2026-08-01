@@ -31,7 +31,6 @@ from config import API_HASH, API_ID, BOT_TOKEN
 from database import get_conn, init_db, is_subscribed
 from inline_menu import inline_menu_callback_handler, inline_query_handler
 from user.auto_block_leaver import handle_chat_member_left
-from user.cekid import cmd_cekid
 from user.callbacks import user_callback_handler
 from user.start import cmd_cancel, cmd_start
 
@@ -114,7 +113,6 @@ def main():
 
     app.add_handler(InlineQueryHandler(inline_query_handler))
     app.add_handler(CallbackQueryHandler(inline_menu_callback_handler, pattern=r"^ih_"))
-    app.add_handler(CommandHandler("cekid", cmd_cekid))
     app.add_handler(CallbackQueryHandler(admin_callback_handler, pattern=r"^(menu_admin|admin_|bl_)"))
     app.add_handler(CallbackQueryHandler(user_callback_handler))
 
