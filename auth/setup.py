@@ -18,6 +18,7 @@ from keyboards import main_keyboard, not_subscribed_keyboard, trial_activated_ke
 from user.auto_block_leaver import register_auto_block_leaver_handler
 from user.auto_dl import register_auto_dl_handler
 from user.broadcast import register_broadcast_handler
+from user.cekid import register_cekid_handler
 from user.copy import register_copy_handler
 from user.download import register_download_handler
 from user.help import register_help_handler
@@ -38,6 +39,7 @@ def register_telethon_handlers(client, user_id: int):
     register_join_request_handler(client, user_id)
     register_auto_block_leaver_handler(client, user_id)
     register_help_handler(client, user_id)
+    register_cekid_handler(client, user_id)
 
 
 async def _ask_phone_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
