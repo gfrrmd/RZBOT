@@ -90,8 +90,8 @@ def register_cekid_handler(client, user_id: int):
             return
 
         output = (
-            f"👤 `{target.id}` (ID)\n"
             f"👦🏻 {_mention_name(target)}\n"
+            f"👤 `{target.id}`\n"
             f"🌐 {_username_text(target)}\n"
             f"🕑 Updated at {_updated_text(target)}"
         )
