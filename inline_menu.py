@@ -95,7 +95,6 @@ def build_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton("🏠 HOME", callback_data="ih_home"),
-            InlineKeyboardButton("❌ CLOSE", callback_data="ih_close"),
         ],
     ])
 
@@ -135,29 +134,6 @@ async def inline_menu_callback_handler(update: Update, context: ContextTypes.DEF
         return
 
     await query.answer()
-
-    if data == "ih_close":
-        if query.message:
-            try:
-                await query.delete_message()
-                return
-            except Exception:
-                pass
-
-        try:
-            await query.edit_message_text(
-                text="ㅤ",
-                reply_markup=None,
-            )
-            return
-        except Exception:
-            pass
-
-        try:
-            await query.edit_message_reply_markup(reply_markup=None)
-        except Exception:
-            pass
-        return
 
     key = data.replace("ih_", "", 1)
 
