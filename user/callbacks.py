@@ -25,6 +25,32 @@ from user.subscription import build_subscription_text
 from utils.channel_scanner import get_admin_channels
 
 
+def _fitur_download_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("⏱️ Media Timer", callback_data="fitur_timer"),
+            InlineKeyboardButton("📣 Channel/Grup", callback_data="fitur_copy"),
+        ],
+        [
+            InlineKeyboardButton("🎥 Story", callback_data="fitur_story"),
+            InlineKeyboardButton("🔙 Kembali", callback_data="menu_fitur"),
+        ],
+    ])
+
+
+def _fitur_auto_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("📢 Broadcast", callback_data="fitur_broadcast"),
+            InlineKeyboardButton("✅ Auto Approve", callback_data="fitur_acceptall"),
+        ],
+        [
+            InlineKeyboardButton("🔒 Auto Block Leaver", callback_data="fitur_autoblock"),
+            InlineKeyboardButton("🔙 Kembali", callback_data="menu_fitur"),
+        ],
+    ])
+
+
 async def _show_auto_block_menu(query, uid):
     client = active_clients.get(uid)
 
@@ -137,7 +163,7 @@ async def user_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
     if data == "menu_fitur":
         await query.edit_message_text(
             "✨ *Fitur VIP*\n\n"
-            "Pilih fitur di bawah.\n"
+            "Pilih kategori fitur di bawah.\n"
             "Untuk menu seperti screenshot dengan label `via bot`, tekan tombol *Buka Menu Inline*.",
             reply_markup=fitur_vip_keyboard(),
             parse_mode="Markdown",
@@ -150,6 +176,40 @@ async def user_callback_handler(update: Update, context: ContextTypes.DEFAULT_TY
             "Klik tombol di bawah untuk menghubungi admin dan mendapatkan akses VIP.",
             parse_mode="Markdown",
             reply_markup=beli_keyboard(),
+        )
+        return
+
+    if data == "fitur_download":
+        await query.edit_message_text(
+            "📥 *Download*\n\n"
+            "Pilih fitur download yang ingin kamu gunakan.",
+            reply_markup=_fitur_download_keyboard(),
+            parse_mode="Markdown",
+        )
+        return
+
+    if data == "fitur_auto":
+        await query.edit_message_text(
+            "🛠️ *Auto*\n\n"
+            "Pilih fitur otomatis yang ingin kamu gunakan.",
+            reply_markup=_fitur_auto_keyboard(),
+            parse_mode="Markdown",
+        )
+        return
+
+    if data == "fitur_cekid":
+        await query.edit_message_text(
+            "🔍 *Cek ID Telegram*\n\n"
+            "Cek informasi akun Telegram berdasarkan reply, ID angka, atau username.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Balas pesan target lalu kirim:\n"
+            "`.cekid`\n\n"
+            "Atau gunakan salah satu format berikut:\n"
+            "`.cekid 1400806713`\n"
+            "`.cekid @username`\n"
+            "`.cekid username`",
+            reply_markup=back_to_fitur_keyboard(),
+            parse_mode="Markdown",
         )
         return
 
