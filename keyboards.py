@@ -86,12 +86,8 @@ def fitur_vip_keyboard():
             InlineKeyboardButton("🔍 Cek ID", callback_data="fitur_cekid"),
             InlineKeyboardButton("🏓 Ping", callback_data="fitur_ping"),
         ],
-        [
-            InlineKeyboardButton("✨ Buka Menu Inline", switch_inline_query_current_chat="help"),
-        ],
-        [
-            InlineKeyboardButton("🔙 Kembali", callback_data="menu_back"),
-        ],
+        [InlineKeyboardButton("✨ Buka Menu Inline", switch_inline_query_current_chat="help")],
+        [InlineKeyboardButton("🔙 Kembali", callback_data="menu_back")],
     ])
 
 
