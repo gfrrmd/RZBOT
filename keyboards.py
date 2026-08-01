@@ -79,20 +79,19 @@ def blacklist_keyboard():
 def fitur_vip_keyboard():
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("⏱️ Media Timer", callback_data="fitur_timer"),
-            InlineKeyboardButton("📣 Channel/Grup", callback_data="fitur_copy"),
+            InlineKeyboardButton("📥 Download", callback_data="fitur_download"),
+            InlineKeyboardButton("🛠️ Auto", callback_data="fitur_auto"),
         ],
         [
-            InlineKeyboardButton("🎥 Story", callback_data="fitur_story"),
-            InlineKeyboardButton("📢 Broadcast", callback_data="fitur_broadcast"),
-        ],
-        [
+            InlineKeyboardButton("🔍 Cek ID", callback_data="fitur_cekid"),
             InlineKeyboardButton("🏓 Ping", callback_data="fitur_ping"),
-            InlineKeyboardButton("✅ Auto Approve", callback_data="fitur_acceptall"),
         ],
-        [InlineKeyboardButton("🔒 Auto Block Leaver", callback_data="fitur_autoblock")],
-        [InlineKeyboardButton("✨ Buka Menu Inline", switch_inline_query_current_chat="help")],
-        [InlineKeyboardButton("🔙 Kembali", callback_data="menu_back")],
+        [
+            InlineKeyboardButton("✨ Buka Menu Inline", switch_inline_query_current_chat="help"),
+        ],
+        [
+            InlineKeyboardButton("🔙 Kembali", callback_data="menu_back"),
+        ],
     ])
 
 
