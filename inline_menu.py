@@ -26,50 +26,66 @@ def build_menu_text(key: str) -> str:
         ),
         "timer": (
             "⏱️ *Download Media Timer & View Once*\n\n"
-            "Simpan foto/video timer yang hanya bisa dilihat sekali.\n\n"
-            "📝 *Cara pakai:*\n"
-            "Balas pesan view once/timer dengan:\n"
+            "Simpan foto/video timer yang hanya bisa dilihat sekali (view once).\n\n"
+            "📲 *Cara pakai - Manual:*\n"
+            "Balas pesan view once/timer dengan perintah:\n"
             "`.dl`\n\n"
-            "⚙️ Auto DL diatur dari bot utama."
+            "🤖 *Cara pakai - Auto DL (Otomatis):*\n"
+            "Aktifkan Auto DL di bot agar bot otomatis menyimpan setiap media view once yang masuk ke chat kamu."
         ),
         "copy": (
-            "📣 *Download dari Channel/Grup Private*\n\n"
-            "Gunakan:\n"
+            "📥 *Download dari Channel/Grup Private*\n\n"
+            "Download pesan, foto, atau video dari channel/grup yang dibatasi (restricted/tidak bisa di-forward).\n\n"
+            "📝 *Cara pakai:*\n"
+            "Ketik dimanapun dengan command:\n"
             "`.copy (link postingan)`\n\n"
-            "💡 Contoh:\n"
+            "💡 *Contoh:*\n"
             "`.copy https://t.me/koleksijee/456`"
         ),
         "story": (
             "🎥 *Download Story*\n\n"
-            "Gunakan:\n"
+            "Download story Telegram milik orang lain langsung dari link story-nya.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Kirim link story yang ingin didownload:\n"
             "`.story (link story)`\n\n"
-            "💡 Contoh:\n"
-            "`.story https://t.me/username/s/7`"
+            "💡 *Contoh:*\n"
+            "`.story https://t.me/username/s/7`
         ),
         "bc": (
             "📢 *Broadcast*\n\n"
-            "Gunakan:\n"
+            "Kirim pesan yang sama ke semua grup yang kamu join secara otomatis.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Ketik command berikut dari chat manapun:\n"
             "`.bc (pesan kamu)`\n\n"
-            "🚫 Batalkan:\n"
+            "💡 *Contoh:*\n"
+            "`.bc Hai, ada yang mau berteman?`\n\n"
+            "🚫 *Batalkan broadcast:*\n"
             "`.cancel #task_id`"
         ),
         "ping": (
-            "🏓 *Ping*\n\n"
-            "Gunakan:\n"
-            "`.ping`"
+            ""🏓 *Ping*\n\n"
+            "Cek apakah koneksi session Telethon kamu masih aktif dan berapa lama waktu responnya.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Buka Saved Messages di Telegram kamu, lalu kirim:\n"
+            "`.ping`\n\n"
+            "💡 *Contoh hasil:*\n"
+            "🏓 Pong! 42ms"
         ),
         "acceptall": (
             "✅ *Auto Approve*\n\n"
-            "Gunakan:\n"
+            "Approve semua join request di channel/grup kamu secara otomatis.\n\n"
+            "📝 *Cara pakai:*\n"
+            "Jalankan command di dalam channel, atau sertakan username/link:\n"
             "`.acceptall`\n"
+            "`.acceptall (username/link channel)`\n\n"
+            "💡 *Contoh:*\n"
             "`.acceptall @namaChannel`\n\n"
-            "⏹ Stop:\n"
+            "⏹ *Untuk stop:*\n"
             "`.stopaccept`"
         ),
         "autoblock": (
             "🔒 *Auto Block Leaver*\n\n"
-            "Pengaturan channel dilakukan di bot utama pada menu Fitur VIP.\n"
-            "Jika seseorang keluar dari channel yang aktif, akun mereka akan otomatis diblokir dari akun Telegram kamu."
+            "⚠️ Pengaturan channel dilakukan di bot utama pada menu Fitur VIP. Jika seseorang keluar dari channel yang aktif, akun mereka akan otomatis diblokir dari akun Telegram kamu."
         ),
     }
 
